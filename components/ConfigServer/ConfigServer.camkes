@@ -1,0 +1,29 @@
+/*
+   *  CAmkES configuration file for the ConfigServer component.
+   *
+   *  Copyright (C) 2020, Hensoldt Cyber GmbH
+*/
+
+import <if_OS_Storage.camkes>;
+import <if_OS_Logger.camkes>;
+import <if_OS_ConfigService.camkes>;
+
+component ConfigServer {
+
+    provides if_OS_ConfigService OS_ConfigServiceServer;
+
+    //-------------------------------------------------
+    // dataports for clients
+    dataport Buf cfg_dataport_buf1;
+    dataport Buf cfg_dataport_buf2;
+
+    //-------------------------------------------------
+    // Storage interface
+    uses     if_OS_Storage storage_rpc;
+    dataport Buf           storage_dp;
+
+    //-------------------------------------------------
+    // interface to log server
+    dataport Buf                            logServer_dp;
+    uses     if_OS_Logger                   logServer_rpc;
+}

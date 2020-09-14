@@ -1,0 +1,27 @@
+/*
+   *  CAmkES configuration file for the LogServer component.
+   *
+   *  Copyright (C) 2020, Hensoldt Cyber GmbH
+*/
+
+
+import <if_OS_Storage.camkes>;
+import <if_OS_Logger.camkes>;
+import <if_OS_Timer.camkes>;
+
+
+component LogServer {
+
+    provides if_OS_Logger            logServer_rpc;
+
+    dataport Buf                     configServer_dp;
+    dataport Buf                     testApp1_dp;
+    dataport Buf                     testApp2_dp;
+
+    consumes TimerReady              timeServer_notify;
+    uses     if_OS_Timer             timeServer_rpc;
+
+    uses     if_OS_Storage           storage_rpc;
+    dataport Buf                     storage_dp;
+
+}

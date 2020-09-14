@@ -1,0 +1,114 @@
+/*
+   *  CAmkES configuration file for the ConfigServer test suite.
+   *
+   *  Copyright (C) 2019, Hensoldt Cyber GmbH
+*/
+
+
+import <std_connector.camkes>;
+
+import <if_OS_Timer.camkes>;
+
+import "components/TestApp/TestApp.camkes";
+import "components/ConfigServer/ConfigServer.camkes";
+import "components/LogServer/LogServer.camkes";
+
+#include "system_config.h"
+
+#include "SdHostController/SdHostController.camkes"
+DECLARE_COMPONENT_SDHC(Sdhc);
+
+#include "TimeServer/camkes/TimeServer.camkes"
+DECLARE_COMPONENT_TimeServer(TimeServer)
+
+#include "StorageServer/camkes/StorageServer.camkes"
+DECLARE_COMPONENT_StorageServer(StorageServer)
+
+assembly {
+    composition {
+        //----------------------------------------------------------------------
+        // LogServer
+        //----------------------------------------------------------------------
+        component  LogServer        logServer;
+
+        //----------------------------------------------------------------------
+        // SdHostController
+        //----------------------------------------------------------------------
+        DECLARE_AND_CONNECT_INSTANCE_SDHC(Sdhc, sdhc)
+
+        //----------------------------------------------------------------------
+        // TimeServer
+        //----------------------------------------------------------------------
+        DECLARE_AND_CONNECT_INSTANCE_TimeServer(
+            TimeServer,
+            timeServer,
+            logServer.timeServer_rpc, logServer.timeServer_notify)
+
+        //----------------------------------------------------------------------
+        // ConfigServer
+        //----------------------------------------------------------------------
+        component   ConfigServer   configServer;
+
+        connection  seL4RPCCall         configServer_logServer           (from configServer.logServer_rpc, to logServer.logServer_rpc);
+        connection  seL4SharedData      configServer_logServer_data      (from configServer.logServer_dp,  to logServer.configServer_dp);
+
+        //----------------------------------------------------------------------
+        // TestApp1
+        //----------------------------------------------------------------------
+        component   TestApp1         testApp1;
+
+        connection  seL4RPCCall      testApp1_configServer          (from testApp1.OS_ConfigServiceServer,      to configServer.OS_ConfigServiceServer);
+        connection  seL4SharedData   testApp1_configServer_data     (from testApp1.cfg_dataport_buf,            to configServer.cfg_dataport_buf1);
+
+        connection  seL4RPCCall      testApp1_logServer             (from testApp1.logServer_rpc, to logServer.logServer_rpc);
+        connection  seL4SharedData   testApp1_logServer_data        (from testApp1.logServer_dp,  to logServer.testApp1_dp);
+
+        //----------------------------------------------------------------------
+        // TestApp2
+        //----------------------------------------------------------------------
+        component   TestApp2         testApp2;
+
+        connection  seL4RPCCall      testApp2_configServer       (from testApp2.OS_ConfigServiceServer, to configServer.OS_ConfigServiceServer);
+        connection  seL4SharedData   testApp2_configServer_data  (from testApp2.cfg_dataport_buf, to configServer.cfg_dataport_buf2);
+
+        connection  seL4RPCCall      testApp2_logServer          (from testApp2.logServer_rpc, to logServer.logServer_rpc);
+        connection  seL4SharedData   testApp2_logServer_data     (from testApp2.logServer_dp,  to logServer.testApp2_dp);
+
+        //----------------------------------------------------------------------
+        // StorageServer
+        //----------------------------------------------------------------------
+        DECLARE_AND_CONNECT_INSTANCE_StorageServer(
+            StorageServer, storageServer,
+            sdhc.storage_rpc, sdhc.storage_port,
+            testApp1.storage_rpc, testApp1.storage_dp,
+            testApp2.storage_rpc, testApp2.storage_dp,
+            configServer.storage_rpc,  configServer.storage_dp,
+            logServer.storage_rpc, logServer.storage_dp)
+
+    }
+
+    configuration {
+        /* client id's */
+        configServer.logServer_rpc_attributes =     CONFIGSERVER_LOGGER_ID;
+        testApp1.logServer_rpc_attributes =         TESTAPP1_LOGGER_ID;
+        testApp2.logServer_rpc_attributes =         TESTAPP2_LOGGER_ID;
+
+        CONFIGURE_INSTANCE_StorageServer(
+            storageServer,
+            TESTAPP1_STORAGE_OFFSET,     TESTAPP1_STORAGE_SIZE,
+            TESTAPP2_STORAGE_OFFSET,     TESTAPP2_STORAGE_SIZE,
+            CONFIGSERVER_STORAGE_OFFSET, CONFIGSERVER_STORAGE_SIZE,
+            LOGSERVER_STORAGE_OFFSET,    LOGSERVER_STORAGE_SIZE)
+
+        ASSIGN_CLIENT_BADGE_StorageServer(
+            testApp1, storage_rpc, TESTAPP1_STORAGE_ID)
+        ASSIGN_CLIENT_BADGE_StorageServer(
+            testApp2, storage_rpc, TESTAPP2_STORAGE_ID)
+        ASSIGN_CLIENT_BADGE_StorageServer(
+            configServer, storage_rpc, CONFIGSERVER_STORAGE_ID)
+        ASSIGN_CLIENT_BADGE_StorageServer(
+            logServer, storage_rpc, LOGGER_STORAGE_ID)
+
+        CONFIGURE_INSTANCE_SDHC(sdhc, SDHC_DEFAULT_PADDR, SDHC_DEFAULT_IRQ)
+    }
+}
