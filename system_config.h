@@ -46,7 +46,7 @@
 // StorageServer
 //-----------------------------------------------------------------------------
 // 1 MiB reserved for GPT
-#define GPT_STORAGE_SIZE            (1024*1024)
+#define GPT_STORAGE_SIZE            (129*1024*1024)
 
 // 128 MiB
 #define TESTAPP1_STORAGE_OFFSET     GPT_STORAGE_SIZE
@@ -56,15 +56,15 @@
 #define TESTAPP2_STORAGE_OFFSET     (TESTAPP1_STORAGE_OFFSET + TESTAPP1_STORAGE_SIZE)
 #define TESTAPP2_STORAGE_SIZE       (128*1024*1024)
 
-// 1GiB
+// 128 MiB
 #define CONFIGSERVER_STORAGE_OFFSET (TESTAPP2_STORAGE_OFFSET + TESTAPP2_STORAGE_SIZE)
-#define CONFIGSERVER_STORAGE_SIZE   (1024*1024*1024)
+#define CONFIGSERVER_STORAGE_SIZE   (128*1024*1024)
 
 // Should be 4GiB as outlined in the partition layout of the WikiPage for this
 // test system, but due to a bug in the StorageServer setup (SEOS-1745), for now
 // the size is reduced to 1GiB
 #define LOGSERVER_STORAGE_OFFSET    (CONFIGSERVER_STORAGE_OFFSET + CONFIGSERVER_STORAGE_SIZE)
-#define LOGSERVER_STORAGE_SIZE      (1024*1024*1024)
+#define LOGSERVER_STORAGE_SIZE      (128*1024*1024)
 
 //-----------------------------------------------------------------------------
 // IDS
