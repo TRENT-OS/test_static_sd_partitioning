@@ -47,7 +47,8 @@ assembly {
         DECLARE_AND_CONNECT_INSTANCE_TimeServer(
             TimeServer,
             timeServer,
-            logServer.timeServer_rpc, logServer.timeServer_notify)
+            logServer.timeServer_rpc, logServer.timeServer_notify,
+            sdhc.timeServer_rpc, sdhc.timeServer_notify)
 
         //----------------------------------------------------------------------
         // ConfigServer
