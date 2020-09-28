@@ -37,6 +37,11 @@ assembly {
         DECLARE_AND_CONNECT_INSTANCE_SDHC(Sdhc, sdhc)
 
         //----------------------------------------------------------------------
+        // SdHostController (MuxInit)
+        //----------------------------------------------------------------------
+        DECLARE_AND_CONNECT_INSTANCE_SDHC(Sdhc, sdhcMux)
+
+        //----------------------------------------------------------------------
         // TimeServer
         //----------------------------------------------------------------------
         DECLARE_AND_CONNECT_INSTANCE_TimeServer(
