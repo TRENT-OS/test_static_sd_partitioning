@@ -125,6 +125,7 @@ get_time_sec(
 
 void pre_init(void)
 {
+    return;
     // create filesystem
     if (initFileSystem() != OS_SUCCESS)
     {

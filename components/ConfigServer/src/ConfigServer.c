@@ -75,6 +75,7 @@ initializeConfigBackend(void)
 
 void post_init(void)
 {
+    return;
     Debug_LOG_INFO("Starting ConfigServer...");
 
     Debug_LOG_INFO("Creating the Configuration Backend...");
