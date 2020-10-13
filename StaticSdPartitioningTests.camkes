@@ -110,6 +110,6 @@ assembly {
         ASSIGN_CLIENT_BADGE_StorageServer(
             logServer, storage_rpc, LOGGER_STORAGE_ID)
 
-        CONFIGURE_INSTANCE_SDHC(sdhc, 2)
+        CONFIGURE_INSTANCE_SDHC(sdhc, 4)
     }
 }
